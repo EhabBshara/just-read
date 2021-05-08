@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:just_read/format.dart';
 import 'package:pdf_text/pdf_text.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class Reading extends StatefulWidget {
   final PDFDoc doc;
+  final PdfDocument fancydoc;
   final String title;
-  Reading(this.title, this.doc);
+  Reading(this.title, this.doc, this.fancydoc);
 
   @override
   _ReadingState createState() => _ReadingState();
@@ -38,61 +40,65 @@ class _ReadingState extends State<Reading> {
       color: Colors.black,
       child: StreamBuilder<String>(
         stream: _generatePages(),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          List<Widget> children;
-          if (snapshot.hasData) {
-            // add pages as they arrive to the list to display.
-            _pages.add(snapshot.data);
-            return ListView.separated(
-                separatorBuilder: (context, index) => Column(
-                      children: [
-                        Text(
-                          (index + 1).toString(),
-                          style: TextStyle(fontSize: 15, color: Colors.white),
-                        ),
-                        Divider(
-                          color: Colors.white,
-                          thickness: 2,
-                        )
-                      ],
-                    ),
-                itemCount: _pages.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Format(
-                      _pages[index + 1 < _pages.length ? index + 1 : index],
-                    ),
-                  );
-                });
-          } else if (snapshot.hasError) {
-            children = <Widget>[
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 60,
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
+            _pageStreamBuilder(context, snapshot),
+      ),
+    );
+  }
+
+  Widget _pageStreamBuilder(
+      BuildContext context, AsyncSnapshot<String> snapshot) {
+    List<Widget> children;
+    if (snapshot.hasData) {
+      // add pages as they arrive to the list to display.
+      _pages.add(snapshot.data);
+      return ListView.separated(
+          separatorBuilder: (context, index) => Column(
+                children: [
+                  Text(
+                    (index + 1).toString(),
+                    style: TextStyle(fontSize: 15, color: Colors.white),
+                  ),
+                  Divider(
+                    color: Colors.white,
+                    thickness: 2,
+                  )
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Text('Error: ${snapshot.error}'),
-              )
-            ];
-          } else {
-            children = <Widget>[
-              Container(
-                child: CircularProgressIndicator(),
-                width: 120,
-                height: 120,
+          itemCount: _pages.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Format(
+                _pages[index + 1 < _pages.length ? index + 1 : index],
               ),
-            ];
-          }
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: children,
-            ),
-          );
-        },
+            );
+          });
+    } else if (snapshot.hasError) {
+      children = <Widget>[
+        const Icon(
+          Icons.error_outline,
+          color: Colors.red,
+          size: 60,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Text('Error: ${snapshot.error}'),
+        )
+      ];
+    } else {
+      children = <Widget>[
+        Container(
+          child: CircularProgressIndicator(),
+          width: 120,
+          height: 120,
+        ),
+      ];
+    }
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: children,
       ),
     );
   }
