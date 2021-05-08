@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:pdf_text/pdf_text.dart';
 import 'read.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 void main() => runApp(MyApp());
 
@@ -62,15 +63,16 @@ class _BrowseState extends State<Browse> {
         _readPage();
       }
     } else {
-      print('cancled');
+      print('canceled');
     }
   }
 
   void _readPage() async {
     PDFDoc doc = await PDFDoc.fromFile(_browsedFile);
+    PdfDocument fancydoc =
+        PdfDocument(inputBytes: _browsedFile.readAsBytesSync());
     final route = MaterialPageRoute(builder: (BuildContext context) {
-      print('here the path' + _browsedFile.path);
-      return Reading(formatFileName(_browsedFile.path), doc);
+      return Reading(formatFileName(_browsedFile.path), doc, fancydoc);
     });
     Navigator.of(context).push(route);
   }
