@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:pdf_text/pdf_text.dart';
+import 'package:just_read/services/pdf.dart';
 import 'read.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  int size = 20;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,6 +16,36 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: Text('Just Read'),
+          actions: [
+            PopupMenuButton(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: Container(
+                    width: 120,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 120,
+                              child: TextField(
+                                decoration:
+                                    new InputDecoration(labelText: "Font Size"),
+                                onSubmitted: (String value) =>
+                                    size = int.parse(value),
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row()
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
         ),
         body: Browse(),
       ),
@@ -40,7 +70,7 @@ class _BrowseState extends State<Browse> {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: _BrowseFile,
+            onPressed: _browseFile,
             child: Text('Browse'),
           ),
           Text(_browsedFile != null ? formatFileName(_browsedFile.path) : ""),
@@ -49,7 +79,7 @@ class _BrowseState extends State<Browse> {
     );
   }
 
-  void _BrowseFile() async {
+  void _browseFile() async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
@@ -68,11 +98,10 @@ class _BrowseState extends State<Browse> {
   }
 
   void _readPage() async {
-    PDFDoc doc = await PDFDoc.fromFile(_browsedFile);
-    PdfDocument fancydoc =
-        PdfDocument(inputBytes: _browsedFile.readAsBytesSync());
+    PDF pdf = PDF(file: _browsedFile);
+    await pdf.init();
     final route = MaterialPageRoute(builder: (BuildContext context) {
-      return Reading(formatFileName(_browsedFile.path), doc, fancydoc);
+      return Reading(formatFileName(_browsedFile.path), pdf);
     });
     Navigator.of(context).push(route);
   }
