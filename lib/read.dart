@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:just_read/format.dart';
-import 'package:pdf_text/pdf_text.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:just_read/services/pdf.dart';
 
 class Reading extends StatefulWidget {
-  final PDFDoc doc;
-  final PdfDocument fancydoc;
+  final PDF reader;
   final String title;
-  Reading(this.title, this.doc, this.fancydoc);
+  Reading(this.title, this.reader);
 
   @override
   _ReadingState createState() => _ReadingState();
@@ -23,49 +20,15 @@ class _ReadingState extends State<Reading> {
           fit: BoxFit.fitWidth,
           child: Text(widget.title),
         ),
-        actions: [
-          IconButton(onPressed: null, icon: Icon(Icons.settings)),
-        ],
       ),
       body: _buildPage(),
       backgroundColor: Colors.black,
     );
   }
 
-  // Widget _buildFancyPage() {
-  //   List<TextSpan> children = [];
-  //   PdfTextExtractor extractor = PdfTextExtractor(widget.fancydoc);
-  //   List<TextLine> result =
-  //       extractor.extractTextLines(startPageIndex: 1, endPageIndex: 10);
-  //   for (var i = 0; i < result.length; i++) {
-  //     List<TextWord> wordCollection = result[i].wordCollection;
-  //     if (i != 0) {
-  //       children.add(TextSpan(text: '\n'));
-  //     }
-  //     for (var j = 0; j < wordCollection.length; j++) {
-  //       children.add(
-  //         TextSpan(
-  //           text: wordCollection[j].text == null ? "" : wordCollection[j].text,
-  //           style: TextStyle(
-  //             fontFamily: wordCollection[j].fontName,
-  //             color: Colors.white,
-  //             fontSize: wordCollection[j].fontSize,
-  //           ),
-  //         ),
-  //       );
-  //     }
-  //   }
-  //   return Container(
-  //     height: double.infinity,
-  //     width: double.infinity,
-  //     color: Colors.black,
-  //     child: RichText(
-  //       text: TextSpan(
-  //         children: children,
-  //       ),
-  //     ),
-  //   );
-  // }
+  void initState() {
+    super.initState();
+  }
 
   Widget _buildPage() {
     return Container(
@@ -74,7 +37,7 @@ class _ReadingState extends State<Reading> {
       margin: EdgeInsets.all(10),
       color: Colors.black,
       child: StreamBuilder<String>(
-        stream: _generatePages(),
+        stream: widget.reader.pdfTextReader.pages(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
             _pageStreamBuilder(context, snapshot),
       ),
@@ -86,6 +49,7 @@ class _ReadingState extends State<Reading> {
     List<Widget> children;
     if (snapshot.hasData) {
       // add pages as they arrive to the list to display.
+      print(_pages.length);
       _pages.add(snapshot.data);
       return ListView.separated(
           separatorBuilder: (context, index) => Column(
@@ -103,8 +67,12 @@ class _ReadingState extends State<Reading> {
           itemCount: _pages.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Format(
-                _pages[index + 1 < _pages.length ? index + 1 : index],
+              title: Text(
+                _pages[index],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
               ),
             );
           });
@@ -117,10 +85,14 @@ class _ReadingState extends State<Reading> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 16),
-          child: Text('Error: ${snapshot.error}'),
+          child: Text(
+            'Error: ${snapshot.error}',
+            style: TextStyle(color: Colors.white),
+          ),
         )
       ];
     } else {
+      print('fetching');
       children = <Widget>[
         Container(
           child: CircularProgressIndicator(),
@@ -136,13 +108,5 @@ class _ReadingState extends State<Reading> {
         children: children,
       ),
     );
-  }
-
-  // Generates text from the pdf pages.
-  Stream<String> _generatePages() async* {
-    for (var page in widget.doc.pages) {
-      var content = await page.text;
-      yield content;
-    }
   }
 }
