@@ -32,6 +32,41 @@ class _ReadingState extends State<Reading> {
     );
   }
 
+  // Widget _buildFancyPage() {
+  //   List<TextSpan> children = [];
+  //   PdfTextExtractor extractor = PdfTextExtractor(widget.fancydoc);
+  //   List<TextLine> result =
+  //       extractor.extractTextLines(startPageIndex: 1, endPageIndex: 10);
+  //   for (var i = 0; i < result.length; i++) {
+  //     List<TextWord> wordCollection = result[i].wordCollection;
+  //     if (i != 0) {
+  //       children.add(TextSpan(text: '\n'));
+  //     }
+  //     for (var j = 0; j < wordCollection.length; j++) {
+  //       children.add(
+  //         TextSpan(
+  //           text: wordCollection[j].text == null ? "" : wordCollection[j].text,
+  //           style: TextStyle(
+  //             fontFamily: wordCollection[j].fontName,
+  //             color: Colors.white,
+  //             fontSize: wordCollection[j].fontSize,
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //   }
+  //   return Container(
+  //     height: double.infinity,
+  //     width: double.infinity,
+  //     color: Colors.black,
+  //     child: RichText(
+  //       text: TextSpan(
+  //         children: children,
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _buildPage() {
     return Container(
       width: double.infinity,
