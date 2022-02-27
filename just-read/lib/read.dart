@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:just_read/main.dart';
 import 'package:just_read/services/pdf.dart';
 
 class Reading extends StatefulWidget {
   final PDF reader;
   final String title;
-  double size;
-  Reading(this.title, this.reader, this.size);
+  Reading(this.title, this.reader);
 
   @override
   _ReadingState createState() => _ReadingState();
@@ -39,7 +37,7 @@ class _ReadingState extends State<Reading> {
       margin: EdgeInsets.all(10),
       color: Colors.black,
       child: StreamBuilder<String>(
-        stream: widget.reader.pdfTextReader.pages(),
+        stream: widget.reader.getPagesNormal(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
             _pageStreamBuilder(context, snapshot),
       ),
@@ -58,7 +56,7 @@ class _ReadingState extends State<Reading> {
                 children: [
                   Text(
                     (index + 1).toString(),
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    style: TextStyle(fontSize: 15, color: Colors.white),
                   ),
                   Divider(
                     color: Colors.white,
@@ -73,7 +71,7 @@ class _ReadingState extends State<Reading> {
                 _pages[index],
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: widget.size,
+                  fontSize: 20,
                 ),
               ),
             );
