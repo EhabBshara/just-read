@@ -1,33 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:just_read/services/pdf.dart';
+import 'package:just_read/models/settings.dart';
+import 'package:just_read/widgets/appbar.dart';
+import 'package:provider/provider.dart';
 
-class Reading extends StatefulWidget {
-  final PDF reader;
-  final String title;
-  Reading(this.title, this.reader);
-
-  @override
-  _ReadingState createState() => _ReadingState();
-}
-
-class _ReadingState extends State<Reading> {
+class Reading extends StatelessWidget {
   final _pages = <String>[];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: FittedBox(
-          fit: BoxFit.fitWidth,
-          child: Text(widget.title),
-        ),
-      ),
+      appBar: buildAppBar(context),
       body: _buildPage(),
       backgroundColor: Colors.black,
     );
-  }
-
-  void initState() {
-    super.initState();
   }
 
   Widget _buildPage() {
@@ -36,10 +21,12 @@ class _ReadingState extends State<Reading> {
       height: double.infinity,
       margin: EdgeInsets.all(10),
       color: Colors.black,
-      child: StreamBuilder<String>(
-        stream: widget.reader.getPagesNormal(),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
-            _pageStreamBuilder(context, snapshot),
+      child: Consumer<Settings>(
+        builder: (context, settings, child) => StreamBuilder<String>(
+          stream: settings.pdf.pdfTextReader.pages(),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
+              _pageStreamBuilder(context, snapshot),
+        ),
       ),
     );
   }
@@ -52,30 +39,23 @@ class _ReadingState extends State<Reading> {
       print(_pages.length);
       _pages.add(snapshot.data);
       return ListView.separated(
-          separatorBuilder: (context, index) => Column(
-                children: [
-                  Text(
-                    (index + 1).toString(),
-                    style: TextStyle(fontSize: 15, color: Colors.white),
-                  ),
-                  Divider(
-                    color: Colors.white,
-                    thickness: 2,
-                  )
-                ],
-              ),
-          itemCount: _pages.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(
-                _pages[index],
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                ),
-              ),
-            );
-          });
+        separatorBuilder: (context, index) => Column(
+          children: [
+            Text(
+              (index + 1).toString(),
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+            Divider(
+              color: Colors.white,
+              thickness: 2,
+            )
+          ],
+        ),
+        itemCount: _pages.length,
+        itemBuilder: (context, index) {
+          return PageView(content: _pages[index]);
+        },
+      );
     } else if (snapshot.hasError) {
       children = <Widget>[
         const Icon(
@@ -106,6 +86,26 @@ class _ReadingState extends State<Reading> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: children,
+      ),
+    );
+  }
+}
+
+class PageView extends StatelessWidget {
+  final String content;
+  PageView({this.content});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Consumer<Settings>(
+        builder: (context, settings, child) => Text(
+          content,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: settings.fontSize > 0 ? settings.fontSize : 20,
+          ),
+        ),
       ),
     );
   }

@@ -2,49 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:just_read/models/settings.dart';
 import 'package:just_read/services/pdf.dart';
-import 'package:just_read/read.dart';
 import 'package:file_picker/file_picker.dart';
-
-double size = 20;
+import 'package:just_read/widgets/appbar.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Just Read'),
-        actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                child: Container(
-                  width: 120,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 120,
-                            child: TextField(
-                              decoration:
-                                  new InputDecoration(labelText: "Font Size"),
-                              onSubmitted: (String value) =>
-                                  size = double.parse(value),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row()
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
+      appBar: buildAppBar(context, title: "Just Read"),
       body: Browse(),
     );
   }
@@ -67,7 +35,7 @@ class _BrowseState extends State<Browse> {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: _browseFile,
+            onPressed: () => _browseFile(context),
             child: Text('Browse'),
           ),
           Text(_browsedFile != null ? formatFileName(_browsedFile.path) : ""),
@@ -76,7 +44,7 @@ class _BrowseState extends State<Browse> {
     );
   }
 
-  void _browseFile() async {
+  void _browseFile(BuildContext context) async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
@@ -87,20 +55,23 @@ class _BrowseState extends State<Browse> {
         setState(() {
           _browsedFile = files[0];
         });
-        _readPage();
+        _readPage(context);
       }
     } else {
       print('canceled');
     }
   }
 
-  void _readPage() async {
+  void _readPage(BuildContext context) async {
     PDF pdf = PDF(file: _browsedFile);
     await pdf.init();
-    final route = MaterialPageRoute(builder: (BuildContext context) {
-      return Reading(formatFileName(_browsedFile.path), pdf, size);
-    });
-    Navigator.of(context).push(route);
+    _setPDF(context, pdf);
+    Navigator.pushNamed(context, '/read');
+  }
+
+  void _setPDF(BuildContext context, PDF pdf) {
+    var settings = context.read<Settings>();
+    settings.setPDF(pdf);
   }
 
   String formatFileName(String filename) {

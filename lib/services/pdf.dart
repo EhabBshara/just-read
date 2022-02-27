@@ -10,11 +10,13 @@ class PDF {
   PDFReader<PDFDoc> pdfTextReader = PDFText();
   PDFReader<PdfDocument> pdfSyncfusion = PDFSyncfusion();
   final File file;
+  String title;
   PDF({this.file});
 
   init() async {
     await pdfTextReader.getDoc(file);
     await pdfSyncfusion.getDoc(file);
+    title = _formatFileName(file.path);
   }
 
   Stream<String> getPagesNormal() {
@@ -23,5 +25,13 @@ class PDF {
 
   Stream<String> getPagesSyncfusion() {
     return pdfSyncfusion.pages();
+  }
+
+  String getFileName() {
+    return title;
+  }
+
+  String _formatFileName(String filename) {
+    return filename.split('/').last;
   }
 }

@@ -16,7 +16,6 @@ class PDFText implements PDFReader<PDFDoc> {
 
   @override
   getDoc(File file) async {
-    print("file is" + file.path);
     PDFDoc pddf = await PDFDoc.fromFile(file);
     pdf = pddf;
   }
