@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:just_read/models/settings.dart';
 import 'package:just_read/widgets/appbar.dart';
 import 'package:provider/provider.dart';
+import '../format.dart';
 
 class Reading extends StatelessWidget {
-  final _pages = <String>[];
-
+  final _pages = <dynamic>[];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,9 +22,9 @@ class Reading extends StatelessWidget {
       margin: EdgeInsets.all(10),
       color: Colors.black,
       child: Consumer<Settings>(
-        builder: (context, settings, child) => StreamBuilder<String>(
-          stream: settings.pdf.pdfTextReader.pages(),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) =>
+        builder: (context, settings, child) => StreamBuilder<dynamic>(
+          stream: settings.pdf.pages(),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
               _pageStreamBuilder(context, snapshot),
         ),
       ),
@@ -32,11 +32,10 @@ class Reading extends StatelessWidget {
   }
 
   Widget _pageStreamBuilder(
-      BuildContext context, AsyncSnapshot<String> snapshot) {
+      BuildContext context, AsyncSnapshot<dynamic> snapshot) {
     List<Widget> children;
     if (snapshot.hasData) {
       // add pages as they arrive to the list to display.
-      print(_pages.length);
       _pages.add(snapshot.data);
       return ListView.separated(
         separatorBuilder: (context, index) => Column(
@@ -53,7 +52,7 @@ class Reading extends StatelessWidget {
         ),
         itemCount: _pages.length,
         itemBuilder: (context, index) {
-          return PageView(content: _pages[index]);
+          return PageView(page: _pages[index]);
         },
       );
     } else if (snapshot.hasError) {
@@ -92,18 +91,19 @@ class Reading extends StatelessWidget {
 }
 
 class PageView extends StatelessWidget {
-  final String content;
-  PageView({this.content});
+  final String page;
+
+  PageView({this.page});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Consumer<Settings>(
         builder: (context, settings, child) => Text(
-          content,
+          page,
           style: TextStyle(
             color: Colors.white,
-            fontSize: settings.fontSize > 0 ? settings.fontSize : 20,
+            fontSize: settings.fontSize,
           ),
         ),
       ),

@@ -31,8 +31,9 @@ dependencies:
   file_picker: ^3.0.1
   pdf_text: ^0.5.0
   sprintf: "^4.0.0"
-  syncfusion_flutter_pdf: ^18.3.53-beta
+  syncfusion_flutter_pdf: ^19.4.54-beta
   provider: ^6.0.0
+  syncfusion_flutter_pdfviewer: ^19.4.54-beta
 
 
 dev_dependencies:

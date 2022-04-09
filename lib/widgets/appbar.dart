@@ -9,7 +9,8 @@ AppBar buildAppBar(BuildContext context, {String title = ""}) {
       fit: BoxFit.fitWidth,
       child: title == ""
           ? Consumer<Settings>(
-              builder: (context, settings, child) => Text(settings.pdf_.title),
+              builder: (context, settings, child) =>
+                  Text(settings.pdf.pdfTitle),
             )
           : Text(title),
     ),
