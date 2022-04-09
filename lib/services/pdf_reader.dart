@@ -1,7 +1,8 @@
 import 'dart:io';
 
-abstract class PDFReader<T> {
+abstract class PDFReader<T, P> {
   T pdf;
-  getDoc(File file);
-  Stream<String> pages();
+  String pdfTitle;
+  readPDF(File file);
+  Stream<P> pages();
 }

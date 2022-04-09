@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_read/models/settings.dart';
-import 'package:just_read/services/pdf.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:just_read/services/pdf_reader.dart';
+import 'package:just_read/services/pdf_text.dart';
 import 'package:just_read/widgets/appbar.dart';
 import 'package:provider/provider.dart';
 
@@ -38,7 +39,7 @@ class _BrowseState extends State<Browse> {
             onPressed: () => _browseFile(context),
             child: Text('Browse'),
           ),
-          Text(_browsedFile != null ? formatFileName(_browsedFile.path) : ""),
+          Text(_browsedFile != null ? _formatFileName(_browsedFile.path) : ""),
         ],
       ),
     );
@@ -63,18 +64,18 @@ class _BrowseState extends State<Browse> {
   }
 
   void _readPage(BuildContext context) async {
-    PDF pdf = PDF(file: _browsedFile);
-    await pdf.init();
+    PDFReader pdf = PDFText();
+    await pdf.readPDF(_browsedFile);
     _setPDF(context, pdf);
     Navigator.pushNamed(context, '/read');
   }
 
-  void _setPDF(BuildContext context, PDF pdf) {
+  void _setPDF(BuildContext context, PDFText pdf) {
     var settings = context.read<Settings>();
     settings.setPDF(pdf);
   }
 
-  String formatFileName(String filename) {
+  String _formatFileName(String filename) {
     return filename.split('/').last;
   }
 }
