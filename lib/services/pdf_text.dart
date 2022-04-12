@@ -4,6 +4,11 @@ import 'dart:io';
 
 class PDFText implements PDFReader<PDFDoc, String> {
   @override
+  var pdf;
+  String pdfTitle;
+
+  String get title => pdfTitle;
+  @override
   Stream<String> pages() async* {
     for (var page in pdf.pages) {
       var content = await page.text;
@@ -12,15 +17,9 @@ class PDFText implements PDFReader<PDFDoc, String> {
   }
 
   @override
-  var pdf;
-  String pdfTitle;
-
-  @override
   readPDF(File file) async {
     PDFDoc pddf = await PDFDoc.fromFile(file);
     pdf = pddf;
     pdfTitle = file.path.split("/").last;
   }
-
-  String get title => pdfTitle;
 }
