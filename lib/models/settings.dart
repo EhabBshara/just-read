@@ -4,7 +4,7 @@ import 'package:just_read/services/pdf_reader.dart';
 class Settings extends ChangeNotifier {
   int _defaultFontSize = 20;
   int _fontSize = 20;
-  PDFReader _pdfReader;
+  late PDFReader _pdfReader;
 
   int get fontSize => _fontSize;
   PDFReader get pdf => _pdfReader;

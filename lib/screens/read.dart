@@ -92,7 +92,7 @@ class Reading extends StatelessWidget {
 class PageView extends StatelessWidget {
   final String page;
 
-  PageView({this.page});
+  PageView({required this.page});
 
   @override
   Widget build(BuildContext context) {

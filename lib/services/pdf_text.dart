@@ -4,8 +4,8 @@ import 'dart:io';
 
 class PDFText implements PDFReader<PDFDoc, String> {
   @override
-  var pdf;
-  String pdfTitle;
+  late final pdf;
+  late final String pdfTitle;
 
   String get title => pdfTitle;
   @override

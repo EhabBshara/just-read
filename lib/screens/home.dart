@@ -10,6 +10,7 @@ import 'package:just_read/widgets/appbar.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +21,7 @@ class Home extends StatelessWidget {
 }
 
 class Browse extends StatelessWidget {
-  File _browsedFile;
+  File? _browsedFile;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,19 +33,19 @@ class Browse extends StatelessWidget {
             onPressed: () => _browseFile(context),
             child: Text('Browse'),
           ),
-          Text(_browsedFile != null ? _formatFileName(_browsedFile.path) : ""),
+          Text(_browsedFile != null ? _formatFileName(_browsedFile!.path) : ""),
         ],
       ),
     );
   }
 
   void _browseFile(BuildContext context) async {
-    FilePickerResult result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
     if (result != null) {
-      List<File> files = result.paths.map((path) => File(path)).toList();
+      List<File> files = result.paths.map((path) => File(path!)).toList();
       if (files.length > 0) {
         _browsedFile = files[0];
         _readPage(context);
@@ -56,12 +57,12 @@ class Browse extends StatelessWidget {
 
   void _readPage(BuildContext context) async {
     PDFReader pdf = PDFText();
-    await pdf.readPDF(_browsedFile);
+    await pdf.readPDF(_browsedFile!);
     _setPDF(context, pdf);
     Navigator.pushNamed(context, '/read');
   }
 
-  void _setPDF(BuildContext context, PDFText pdf) {
+  void _setPDF(BuildContext context, PDFReader pdf) {
     var settings = context.read<Settings>();
     settings.setPDF(pdf);
   }
