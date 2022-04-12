@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:just_read/models/settings.dart';
 import 'package:just_read/widgets/appbar.dart';
 import 'package:provider/provider.dart';
-import '../format.dart';
 
 class Reading extends StatelessWidget {
   final _pages = <dynamic>[];
@@ -42,10 +41,10 @@ class Reading extends StatelessWidget {
           children: [
             Text(
               (index + 1).toString(),
-              style: TextStyle(fontSize: 20, color: Colors.white),
+              style: TextStyle(fontSize: 20, color: Colors.yellow),
             ),
             Divider(
-              color: Colors.white,
+              color: Colors.yellow,
               thickness: 2,
             )
           ],
@@ -102,8 +101,8 @@ class PageView extends StatelessWidget {
         builder: (context, settings, child) => Text(
           page,
           style: TextStyle(
-            color: Colors.white,
-            fontSize: settings.fontSize,
+            color: Colors.cyan,
+            fontSize: settings.fontSize.toDouble(),
           ),
         ),
       ),

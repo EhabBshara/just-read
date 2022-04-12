@@ -19,14 +19,7 @@ class Home extends StatelessWidget {
   }
 }
 
-class Browse extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _BrowseState();
-  }
-}
-
-class _BrowseState extends State<Browse> {
+class Browse extends StatelessWidget {
   File _browsedFile;
   @override
   Widget build(BuildContext context) {
@@ -53,9 +46,7 @@ class _BrowseState extends State<Browse> {
     if (result != null) {
       List<File> files = result.paths.map((path) => File(path)).toList();
       if (files.length > 0) {
-        setState(() {
-          _browsedFile = files[0];
-        });
+        _browsedFile = files[0];
         _readPage(context);
       }
     } else {

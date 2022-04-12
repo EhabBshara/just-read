@@ -4,6 +4,7 @@ import 'package:just_read/models/settings.dart';
 import 'package:provider/provider.dart';
 
 AppBar buildAppBar(BuildContext context, {String title = ""}) {
+  var txt = TextEditingController();
   return AppBar(
     title: FittedBox(
       fit: BoxFit.fitWidth,
@@ -27,10 +28,12 @@ AppBar buildAppBar(BuildContext context, {String title = ""}) {
                       SizedBox(
                         width: 120,
                         child: TextField(
-                          decoration:
-                              new InputDecoration(labelText: "Font Size"),
+                          controller: txt,
+                          decoration: InputDecoration(
+                              labelText: "Font Size",
+                              hintText: _getFontSize(context).toString()),
                           onChanged: (String value) =>
-                              _changeFontSize(context, double.parse(value)),
+                              _changeFontSize(context, int.parse(value)),
                           keyboardType: TextInputType.number,
                         ),
                       ),
@@ -47,7 +50,11 @@ AppBar buildAppBar(BuildContext context, {String title = ""}) {
   );
 }
 
-void _changeFontSize(BuildContext context, double newFontSize) {
+void _changeFontSize(BuildContext context, int newFontSize) {
   var settings = context.read<Settings>();
   settings.changeFont(newFontSize);
+}
+
+int _getFontSize(BuildContext context) {
+  return context.read<Settings>().fontSize;
 }
