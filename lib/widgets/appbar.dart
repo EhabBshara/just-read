@@ -4,7 +4,8 @@ import 'package:just_read/models/settings.dart';
 import 'package:provider/provider.dart';
 
 AppBar buildAppBar(BuildContext context, {String title = ""}) {
-  var txt = TextEditingController();
+  var fontController = TextEditingController();
+  var goToController = TextEditingController();
   return AppBar(
     title: FittedBox(
       fit: BoxFit.fitWidth,
@@ -20,26 +21,31 @@ AppBar buildAppBar(BuildContext context, {String title = ""}) {
         itemBuilder: (context) => [
           PopupMenuItem(
             child: Container(
-              width: 200,
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 120,
-                        child: TextField(
-                          controller: txt,
-                          decoration: InputDecoration(
-                              labelText: "Font Size",
-                              hintText: _getFontSize(context).toString()),
-                          onChanged: (String value) =>
-                              _changeFontSize(context, int.parse(value)),
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                    ],
+                  SizedBox(
+                    child: TextField(
+                      controller: fontController,
+                      decoration: InputDecoration(
+                          labelText: "Font Size",
+                          hintText: _getFontSize(context).toString()),
+                      onChanged: (String value) =>
+                          _changeFontSize(context, int.parse(value)),
+                      keyboardType: TextInputType.number,
+                    ),
                   ),
-                  Row()
+                  SizedBox(
+                    child: TextField(
+                      controller: goToController,
+                      decoration: InputDecoration(
+                          labelText: "Go to page",
+                          hintText:
+                              context.read<Settings>().goToPageNum.toString()),
+                      onSubmitted: (String value) =>
+                          _goToPage(context, int.parse(value)),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -53,6 +59,11 @@ AppBar buildAppBar(BuildContext context, {String title = ""}) {
 void _changeFontSize(BuildContext context, int newFontSize) {
   var settings = context.read<Settings>();
   settings.changeFont(newFontSize);
+}
+
+void _goToPage(BuildContext context, int pageNum) {
+  var settings = context.read<Settings>();
+  settings.goToPage(pageNum);
 }
 
 int _getFontSize(BuildContext context) {
