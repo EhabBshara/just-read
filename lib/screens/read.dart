@@ -11,30 +11,38 @@ class Reading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(context),
-      body: _buildPage(),
+      body: _buildPage(context),
       backgroundColor: Colors.black,
     );
   }
 
-  Widget _buildPage() {
+  Widget _buildPage(BuildContext context) {
+    var settings = context.read<Settings>();
     return Container(
       width: double.infinity,
       height: double.infinity,
       margin: EdgeInsets.all(10),
       color: Colors.black,
-      child: Consumer<Settings>(
-        builder: (context, settings, child) => StreamBuilder<dynamic>(
-          stream: settings.pdf.pages(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
-              _pageStreamBuilder(context, snapshot),
-        ),
-      ),
+      child: _pages.length == settings.pdf.totalPages
+          ? DocView(pages: _pages)
+          : Consumer<Settings>(
+              builder: (context, settings, child) => StreamBuilder<dynamic>(
+                stream: settings.pdf.pages(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
+                        _pageStreamBuilder(context, snapshot),
+              ),
+            ),
     );
   }
 
   Widget _pageStreamBuilder(
       BuildContext context, AsyncSnapshot<dynamic> snapshot) {
     List<Widget> children;
+    // avoid reading again if we already have all the pages.
+    if (_pages.length == context.read<Settings>().pdf.totalPages) {
+      return DocView(pages: _pages);
+    }
     if (snapshot.hasData) {
       // add pages as they arrive to the list to display.
       _pages.add(snapshot.data);
@@ -88,10 +96,13 @@ class _DocViewState extends State<DocView> {
 
   @override
   Widget build(BuildContext context) {
-    int goToNum = context.read<Settings>().goToPageNum;
+    Settings settings = context.read<Settings>();
+    int goToNum = settings.goToPageNum;
     if (goToNum != 0) {
       _scrollController.scrollTo(
-          index: goToNum - 1,
+          index: goToNum <= settings.pdf.totalPages
+              ? goToNum - 1
+              : settings.pdf.totalPages,
           duration: Duration(microseconds: 200),
           curve: Curves.easeInOutCubic);
       context.read<Settings>().goToPage(0);
@@ -116,14 +127,7 @@ class _DocViewState extends State<DocView> {
         ),
         itemCount: widget.pages.length,
         itemBuilder: (context, index) {
-          int target;
-          if (goToNum == 0) {
-            target = index;
-          } else {
-            target = goToNum;
-            goToNum = 0;
-          }
-          return PageViews(page: widget.pages[target]);
+          return PageViews(page: widget.pages[index]);
         },
       ),
     );

@@ -6,8 +6,8 @@ class PDFText implements PDFReader<PDFDoc, String> {
   @override
   late final pdf;
   late final String pdfTitle;
+  late final int totalPages;
 
-  String get title => pdfTitle;
   @override
   Stream<String> pages() async* {
     for (var page in pdf.pages) {
@@ -21,5 +21,6 @@ class PDFText implements PDFReader<PDFDoc, String> {
     PDFDoc pddf = await PDFDoc.fromFile(file);
     pdf = pddf;
     pdfTitle = file.path.split("/").last;
+    totalPages = pdf.pages.length;
   }
 }
