@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_read/models/settings.dart';
 import 'package:provider/provider.dart';
+import 'colorPicker.dart';
 
 AppBar buildAppBar(BuildContext context, {String title = ""}) {
   var fontController = TextEditingController();
@@ -46,6 +47,15 @@ AppBar buildAppBar(BuildContext context, {String title = ""}) {
                       keyboardType: TextInputType.number,
                     ),
                   ),
+                  ColorPicker(
+                      title: "Text color",
+                      onColorChanged: (color) =>
+                          context.read<Settings>().changeTextColor(color)),
+                  ColorPicker(
+                      title: "Background color",
+                      onColorChanged: (color) => context
+                          .read<Settings>()
+                          .changeBackgroundColor(color)),
                 ],
               ),
             ),

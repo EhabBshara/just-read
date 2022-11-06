@@ -12,7 +12,7 @@ class Reading extends StatelessWidget {
     return Scaffold(
       appBar: buildAppBar(context),
       body: _buildPage(context),
-      backgroundColor: Colors.black,
+      backgroundColor: context.read<Settings>().backgroundColor,
     );
   }
 
@@ -22,7 +22,7 @@ class Reading extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       margin: EdgeInsets.all(10),
-      color: Colors.black,
+      color: context.read<Settings>().backgroundColor,
       child: _pages.length == settings.pdf.totalPages
           ? DocView(pages: _pages)
           : Consumer<Settings>(
@@ -146,7 +146,7 @@ class PageViews extends StatelessWidget {
         builder: (context, settings, child) => Text(
           page,
           style: TextStyle(
-            color: Colors.cyan,
+            color: settings.textColor,
             fontSize: settings.fontSize.toDouble(),
           ),
         ),
