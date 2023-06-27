@@ -29,7 +29,6 @@ class ColorPicker extends StatelessWidget {
       context,
       title + " picker",
       MaterialColorPicker(
-        selectedColor: Colors.cyan,
         onColorChange: this.onColorChanged,
         onBack: () => print("Back button pressed"),
       ),
