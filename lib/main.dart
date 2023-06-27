@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:just_read/plugin_example.dart';
 import 'package:just_read/screens/home.dart';
 import 'package:just_read/screens/read.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,7 @@ class JustRead extends StatelessWidget {
         routes: {
           '/': (context) => Home(),
           '/read': (context) => Reading(),
+          '/plugin': (context) => PluginExample(),
         },
       ),
     );

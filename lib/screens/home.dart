@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_read/models/settings.dart';
 import 'package:file_picker/file_picker.dart';
@@ -34,6 +33,10 @@ class Browse extends StatelessWidget {
             child: Text('Browse'),
           ),
           Text(_browsedFile != null ? _formatFileName(_browsedFile!.path) : ""),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/plugin'),
+            child: Text('Test Plugin'),
+          ),
         ],
       ),
     );
