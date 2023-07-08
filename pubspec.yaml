@@ -34,8 +34,13 @@ dependencies:
   syncfusion_flutter_pdf: ^19.4.54-beta
   provider: ^6.0.0
   syncfusion_flutter_pdfviewer: ^19.4.54-beta
-  scrollable_positioned_list: ^0.2.3
+  scrollable_positioned_list:
+    git:
+      url: https://github.com/bitstackapp/flutter.widgets.git
+      ref: master
+      path: packages/scrollable_positioned_list/
   flutter_material_color_picker: ^1.1.0+2
+  get:
 
 
 dev_dependencies:
