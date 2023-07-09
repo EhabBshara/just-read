@@ -22,7 +22,6 @@ class Reading extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      margin: EdgeInsets.all(10),
       color: context.read<Settings>().backgroundColor,
       child: DocView(args),
     );

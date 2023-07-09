@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:just_read/controllers/doc_controller.dart';
 import 'package:just_read/services/pdf_reader.dart';
 import 'package:just_read/widgets/page_view.dart';
+import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+import '../models/settings.dart';
 
 class DocView extends StatefulWidget {
   final List<dynamic> _pages = [];
@@ -15,13 +17,21 @@ class DocView extends StatefulWidget {
 }
 
 class _DocViewState extends State<DocView> {
-  final DocController _controller = Get.put(DocController());
+  late final ItemScrollController scrollController;
+  late final ItemPositionsListener positionController;
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController = ItemScrollController();
+    positionController = ItemPositionsListener.create();
+  }
 
   Widget _pageStreamBuilder(
       BuildContext context, AsyncSnapshot<dynamic> snapshot) {
     List<Widget> children;
     // avoid reading again if we already have all the pages.
-    if (widget._pages.length == _controller.getTotalPages()) {
+    if (widget._pages.length == Provider.of<Settings>(context).pdf.totalPages) {
       return displayPages(context, widget._pages);
     }
     if (snapshot.hasData) {
@@ -64,31 +74,39 @@ class _DocViewState extends State<DocView> {
 
   @override
   Widget build(BuildContext context) {
-    _controller.init(context);
     return Container(
       width: double.infinity,
       height: double.infinity,
-      margin: EdgeInsets.all(10),
-      color: _controller.getBackgroundColor(),
-      child: widget._pages.length == _controller.getTotalPages()
-          ? displayPages(context, widget._pages)
-          : StreamBuilder<dynamic>(
-              stream: _controller.getPages(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
-                      _pageStreamBuilder(context, snapshot),
-            ),
+      color: Provider.of<Settings>(context).backgroundColor,
+      child:
+          widget._pages.length == Provider.of<Settings>(context).pdf.totalPages
+              ? displayPages(context, widget._pages)
+              : StreamBuilder<dynamic>(
+                  stream: Provider.of<Settings>(context).pdf.pages(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
+                          _pageStreamBuilder(context, snapshot),
+                ),
     );
   }
 
   Widget displayPages(BuildContext context, List<dynamic> pages) {
-    _controller.scrollTo();
+    int goToNum = Provider.of<Settings>(context).goToPageNum;
+    if (goToNum != 0) {
+      int index = goToNum <= Provider.of<Settings>(context).pdf.totalPages
+          ? goToNum - 1
+          : Provider.of<Settings>(context).pdf.totalPages;
+      scrollController.scrollTo(
+          index: index,
+          duration: Duration(microseconds: 200),
+          curve: Curves.easeInOutCubic);
+      Provider.of<Settings>(context).goToPage(0);
+    }
     return Scrollbar(
       thumbVisibility: true,
-      controller: _controller.scrollController.primaryScrollController,
       child: ScrollablePositionedList.separated(
-        itemScrollController: _controller.scrollController,
-        itemPositionsListener: _controller.positionController,
+        itemScrollController: scrollController,
+        itemPositionsListener: positionController,
         separatorBuilder: (context, index) => Column(
           children: [
             Text(
